@@ -8,7 +8,7 @@ const https: HttpsOptions = {
     // pfx: readFileSync(`./certificados/CERTIFICADO-WARGAS.pfx`),
     certificate: readFileSync(`./certificados/chain.crt`),
     key: readFileSync(`./certificados/chave.key`),
-    passphrase: '600130',
+    passphrase: process.env.CERT_PASSWORD!,
 }
 
 export const efiscoClient = got.extend({
