@@ -10,8 +10,9 @@ COPY . .
 
 RUN bun install
 
-EXPOSE 3333
 
-RUN ["bun", "generate"]
+RUN bun generate
+
+EXPOSE 3333
 
 CMD [ "tail", "-f", "/dev/null" ]
