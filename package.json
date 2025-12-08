@@ -10,6 +10,9 @@
     "tough-cookie": "^6.0.0",
     "tough-cookie-file-store": "^3.2.1"
   },
+  "scripts": {
+    "generate": "prisma generate"
+  },
   "name": "efisco",
   "module": "src/index.ts",
   "type": "module",

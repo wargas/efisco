@@ -12,6 +12,6 @@ RUN bun install
 
 EXPOSE 3333
 
-RUN ["bunx" "prisma" "generate"]
+RUN ["bun", "generate"]
 
 CMD [ "tail", "-f", "/dev/null" ]
