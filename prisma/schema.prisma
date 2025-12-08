@@ -22,4 +22,15 @@ model Processo {
   situacao String
   portador String
   valorImposto Float
+  data_lancamento String?
+  historico Historico[]
+}
+
+model Historico {
+  id String @id
+  processoId String @map("processo_id")
+  data String
+  situacao String
+  usuario String
+  processo Processo @relation(fields: [processoId], references: [id])
 }

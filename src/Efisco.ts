@@ -108,4 +108,27 @@ export class EFisco {
         }
     }
 
+    async consultaHistorico(numero: string) {
+        const numero_protocolo = numero.replace(/\D/g, "")
+        const response = await efiscoClient.get(`sfi_trb_gcd/PRConsultarHistoricoSituacaoProcesso?NuProtocoloICD=${numero_protocolo}`, {
+            responseType: 'buffer',
+            resolveBodyOnly: true,
+        });
+
+        this.html = Buffer.from(response.toString('latin1')).toString('utf-8');
+
+        const rows = this.document.querySelectorAll('#table_tabeladados tr:has(td)');
+
+        return Array.from(rows).map(r => {
+            const cells = r.querySelectorAll('td');
+        
+
+            return {
+                data: cells[0]?.textContent.replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3-$2-$1")+" "+cells[1]?.textContent,
+                situacao: cells[2]?.textContent,
+                usuario: cells[3]?.textContent
+            }
+        })
+    }
+
 }

@@ -1,23 +1,16 @@
-POST https://efisco.deltex.com.br/processoICD
-Content-Type: application/json
-
-{
-  "numero": "2025.000002860198-33"
-}
-
 ###
-POST http://localhost:3000/insert
+POST {{host}}/insert
 Content-Type: application/json
-Authorization: Bearer wrgs2703
+Authorization: Bearer {{token}}
 
 {
   "numero_protocolo": "0000"
 }
 
 ###
-GET http://localhost:3000/list
-Authorization: Bearer wrgs2703
+GET {{host}}/list
+Authorization: Bearer {{token}}
 
 ###
-GET http://localhost:3000/status
-Authorization: Bearer wrgs2703
+GET {{host}}/status
+Authorization: Bearer {{token}}
