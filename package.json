@@ -4,6 +4,7 @@
     "@wargas/prisma-adapter-bun": "^0.0.1",
     "axios": "^1.13.2",
     "got": "^14.6.5",
+    "hono": "^4.10.7",
     "jsdom": "^27.2.0",
     "querystring": "^0.2.1",
     "tough-cookie": "^6.0.0",

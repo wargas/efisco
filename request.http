@@ -1,4 +1,4 @@
-POST http://localhost:3000/processoICD
+POST https://efisco.deltex.com.br/processoICD
 Content-Type: application/json
 
 {
@@ -6,4 +6,18 @@ Content-Type: application/json
 }
 
 ###
+POST http://localhost:3000/insert
+Content-Type: application/json
+Authorization: Bearer wrgs2703
+
+{
+  "numero_protocolo": "0000"
+}
+
+###
+GET http://localhost:3000/list
+Authorization: Bearer wrgs2703
+
+###
 GET http://localhost:3000/status
+Authorization: Bearer wrgs2703
