@@ -1,6 +1,9 @@
-POST https://efisco.deltex.com.br/processoICD
+POST http://localhost:3000/processoICD
 Content-Type: application/json
 
 {
   "numero": "2025.000002860198-33"
 }
+
+###
+GET http://localhost:3000/status
