@@ -2,9 +2,12 @@ import { Hono } from "hono";
 import { EFisco } from "../src/Efisco";
 import { prisma } from "../src/prisma";
 import { authMiddleware } from "../src/middleware";
+import { logger } from 'hono/logger';
 const efisco = EFisco.factory();
 
 const app = new Hono();
+
+app.use(logger());
 
 app.get('/status', authMiddleware, async ctx => {
     await efisco.start();

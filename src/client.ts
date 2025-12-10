@@ -5,7 +5,6 @@ import FileCookieStore from 'tough-cookie-file-store'
 
 
 const https: HttpsOptions = {
-    // pfx: readFileSync(`./certificados/CERTIFICADO-WARGAS.pfx`),
     certificate: readFileSync(`./certificados/chain.crt`),
     key: readFileSync(`./certificados/chave.key`),
     passphrase: process.env.CERT_PASSWORD!,

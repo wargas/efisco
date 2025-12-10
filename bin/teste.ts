@@ -5,10 +5,6 @@ const efisco = EFisco.factory();
 
 await efisco.start();
 
-const processo = "2025.000011007650-15"
+await efisco.login();
 
-await efisco.cadastroProcessoICD(processo)
-
-const data = await efisco.consultaHistorico(processo)
-
-console.log(data)
+console.log('Usuário logado:', efisco.user);
