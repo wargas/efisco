@@ -52,4 +52,5 @@ for await (var processo of processos) {
     }
 }
 
+await fetch(process.env.WEBHOOK_URL!);
 process.exit(0)
