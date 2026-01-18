@@ -26,6 +26,8 @@ export class EFisco {
         Array.from(inputs).filter(i => !!i.name).forEach(input => {
             const { name, value } = input;
 
+            if (['btt_localizar', 'btt_detalhar', 'btt_desistir'].includes(name)) return;
+
             data[name] = value
         })
 
@@ -64,7 +66,7 @@ export class EFisco {
     async login() {
         await this.start();
 
-        if(this.user.nome) {
+        if (this.user.nome) {
             return this.user;
         }
 
@@ -98,7 +100,7 @@ export class EFisco {
         const dados = this.document.querySelectorAll('#table_tabeladados tr+tr td');
 
         return {
-            data_registro: dados[1]?.textContent?.trim(),
+            data_registro: String(dados[1]?.textContent?.trim()).replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3-$2-$1"),
             numero_protocolo: dados[2]?.textContent?.trim(),
             natureza: dados[3]?.textContent?.trim(),
             interessado: dados[4]?.textContent?.trim(),
@@ -121,14 +123,16 @@ export class EFisco {
 
         return Array.from(rows).map(r => {
             const cells = r.querySelectorAll('td');
-        
+
 
             return {
-                data: cells[0]?.textContent.replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3-$2-$1")+" "+cells[1]?.textContent,
+                data: cells[0]?.textContent.replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3-$2-$1") + " " + cells[1]?.textContent,
                 situacao: cells[2]?.textContent,
                 usuario: cells[3]?.textContent
             }
         })
     }
+
+    
 
 }

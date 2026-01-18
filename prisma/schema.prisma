@@ -21,9 +21,12 @@ model Processo {
   interessado String
   situacao String
   portador String
-  valorImposto Float
+  valor_imposto Float?
   data_lancamento String?
+  usuario_lancamento String?
   historico Historico[]
+
+  @@index([situacao,numero_protocolo])
 }
 
 model Historico {
@@ -33,4 +36,6 @@ model Historico {
   situacao String
   usuario String
   processo Processo @relation(fields: [processoId], references: [id])
+
+  @@index([usuario])
 }
