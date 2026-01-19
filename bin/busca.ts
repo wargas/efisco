@@ -97,8 +97,12 @@ for await (var day of days.reverse()) {
                                 update: {}
                             })
                         }
-                
+                                        
                         console.log(`Atualizado: ${processo.id}`)
+
+                        if(process.env.WEBHOOK_URL) {
+                            await fetch(process.env.WEBHOOK_URL)
+                        }
                     }
                 } catch (error) {
                     console.log(error)
