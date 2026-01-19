@@ -33,7 +33,7 @@ app.post('/insert', authMiddleware, async (ctx) => {
             interessado: '',
             situacao: '',
             portador: '',
-            valorImposto: 0
+            valor_imposto: 0
         }
     })
 
