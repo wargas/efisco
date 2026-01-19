@@ -51,7 +51,7 @@ for await (var day of days.reverse()) {
             }
         })
 
-        if(processo.data_lancamento == null && !['CANCELADO', 'AGUARDANDO AVALIAÇÃO', 'PRE - CADASTRADO'].includes(processo.situacao)) {
+        if(processo.data_lancamento == null && !['CANCELADO', 'AGUARDANDO AVALIAÇÃO', 'PRE - CADASTRADO', 'EM EXIGÊNCIA', 'AGUARD. ANÁLISE ISENÇÃO/NÃO INCIDÊNCIA'].includes(processo.situacao)) {
             try {
                     const data = await service.cadastroProcessoICD(processo.id);
                     const historico = await service.consultaHistorico(processo.id);
