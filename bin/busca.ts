@@ -1,7 +1,4 @@
-import { EFisco } from '../src/Efisco'
 import { prisma } from '../src/prisma'
-import { ServiceProcessosPorAsssunto } from '../src/service-assunto';
-import { appendFileSync } from 'fs'
 import { ServiceEntradas } from '../src/service-entradas';
 import { eachDayOfInterval, formatDate } from 'date-fns'
 import { $ } from 'bun';

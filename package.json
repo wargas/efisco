@@ -8,7 +8,8 @@
     "date-fns": "^4.1.0",
     "got": "^14.6.5",
     "hono": "^4.10.7",
-    "jsdom": "^27.2.0",
+    "jsdom": "^27.4.0",
+    "linkedom": "^0.18.12",
     "querystring": "^0.2.1",
     "tough-cookie": "^6.0.0",
     "tough-cookie-file-store": "^3.2.1"

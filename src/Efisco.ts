@@ -1,6 +1,7 @@
 import type { Got } from "got";
 import { efiscoClient } from "./client";
-import { JSDOM } from 'jsdom'
+import { parseHTML } from "linkedom";
+
 
 export class EFisco {
 
@@ -15,7 +16,7 @@ export class EFisco {
     }
 
     get document() {
-        return new JSDOM(this.html).window.document;
+        return parseHTML(this.html).window.document;
     }
 
     get formFields() {
