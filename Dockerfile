@@ -26,4 +26,4 @@ COPY --from=build /app/dist/server /app/server
 
 EXPOSE 3333
 
-CMD [ "tail", "-f", "/dev/null" ]
+CMD [ "/app/server" ]
