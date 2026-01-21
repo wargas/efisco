@@ -17,7 +17,7 @@ RUN bun generate
 RUN bun build.ts
 
 # ------ RUNTIME --------
-FROM gcr.io/distroless/base-debian12
+FROM debian:12-slim
 
 WORKDIR /app
 
