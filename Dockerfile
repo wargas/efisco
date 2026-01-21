@@ -1,17 +1,28 @@
 # syntax=docker/dockerfile:1
 
-FROM oven/bun as build
+FROM oven/bun AS build
 
 ENV TZ=UTC
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY . .
+COPY bun.lock package.json ./
 
 RUN bun install
 
+COPY . .
 
 RUN bun generate
+
+RUN bun build.ts
+
+# ------ RUNTIME --------
+FROM gcr.io/distroless/base-debian12
+
+WORKDIR /app
+
+COPY --from=build /app/dist/busca /app/busca
+COPY --from=build /app/dist/server /app/server
 
 EXPOSE 3333
 
