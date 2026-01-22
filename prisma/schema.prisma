@@ -39,3 +39,9 @@ model Historico {
 
   @@index([usuario])
 }
+
+model Usuario {
+  codigo String @id
+  nome String
+  cpf String
+}

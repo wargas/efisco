@@ -15,7 +15,7 @@
     "tough-cookie-file-store": "^3.2.1"
   },
   "scripts": {
-    "generate": "prisma generate"
+    "generate": "prisma generate && prisma db push"
   },
   "name": "efisco",
   "module": "src/index.ts",

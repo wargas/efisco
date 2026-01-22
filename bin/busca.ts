@@ -2,17 +2,17 @@ import { prisma } from '../src/prisma'
 import { ServiceEntradas } from '../src/service-entradas';
 import { eachDayOfInterval, formatDate } from 'date-fns'
 import { $ } from 'bun';
+import { cookieStore } from '../src/cookie-store';
 
 
 const service = ServiceEntradas.factory();
 
-await $`rm -f cookies.json`
+await cookieStore.removeAllCookies()
 await service.start();
 
 await service.login();
 
 console.log('Usuário logado:', service.user.nome);
-
 
 const start = new Date('2025-01-02');
 const end = new Date()
