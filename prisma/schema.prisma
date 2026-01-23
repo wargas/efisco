@@ -44,4 +44,5 @@ model Usuario {
   codigo String @id
   nome String
   cpf String
+  processos Int @default(0)
 }

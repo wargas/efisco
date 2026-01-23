@@ -1,5 +1,7 @@
-import { prisma } from "../../src/prisma"
-import { ServiceBuscaUsuario } from "../../src/service-usuario"
+import { cookieStore } from "../src/cookie-store"
+import { prisma } from "../src/prisma"
+import { ServiceConsultaRapida } from "../src/service-consulta-rapida"
+import { ServiceBuscaUsuario } from "../src/service-usuario"
 
 const usuarios = [
     "ADAM NOEL SOUZA",
@@ -29,22 +31,34 @@ const usuarios = [
     "RAFAEL HUMMEL DE ALMEIDA",
 ]
 
-const service = await ServiceBuscaUsuario.factory()
+const serviceUsuario = await ServiceBuscaUsuario.factory()
+const serviceConsulta = await ServiceConsultaRapida.factory()
 
-for await(var item of usuarios) {
-   
-    await service.start()
-    await service.busca(item)
+await cookieStore.removeAllCookies()
 
-    for await(var usuario of service.lista) {
+await serviceUsuario.login()
+
+for await (var item of usuarios) {
+
+    await serviceUsuario.start()
+    await serviceUsuario.busca(item)
+
+    for await (var usuario of serviceUsuario.lista) {
+
+        await serviceConsulta.start()
+
+        await serviceConsulta.busca(usuario.codigo)
+
+        const processos = serviceConsulta.lista
+
+        const data = { ...usuario, processos: processos.length }
+
         const insert = await prisma.usuario.upsert({
-            where: { codigo: usuario.codigo},
-            create: usuario,
-            update: usuario
+            where: { codigo: usuario.codigo },
+            create: data,
+            update: data,
         })
 
-        console.log(insert)
+        console.log(insert.nome, processos.length)
     }
 }
-
-await Bun.write('html/usuarios.html', service.html)

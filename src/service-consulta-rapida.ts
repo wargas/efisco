@@ -1,4 +1,4 @@
-import { EFisco } from "../../src/Efisco";
+import { EFisco } from "./Efisco";
 
 export class ServiceConsultaRapida extends EFisco {
 
@@ -17,13 +17,17 @@ export class ServiceConsultaRapida extends EFisco {
         })
     }
 
+    get lista() {
+        const rows = this.document.querySelectorAll('#table_tabeladados tr+tr');
+
+        return Array.from(rows).map(row => {
+            const cells = row.querySelectorAll('td')
+
+            return {
+                numero: cells[0]?.textContent!,
+            }
+        })
+
+    }
+
 }
-
-
-
-const service = await ServiceConsultaRapida.factory()
-
-await service.start()
-await service.busca('6997528')
-
-await Bun.write('html/consulta.html', service.html)

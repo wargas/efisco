@@ -13,7 +13,7 @@ await Bun.build({
 })
 
 await Bun.build({
-    entrypoints: ['bin/testes/usuario.ts'],
+    entrypoints: ['bin/usuario.ts'],
     target: 'bun',
     compile: true,
     outdir: './dist',

@@ -14,7 +14,7 @@ export class ServiceBuscaUsuario extends EFisco {
             evento: 'processarFiltroConsulta',
             nao_utilizar_id_contexto_sessao: 'true',
             NmUsuario: nome,
-            CdTipoUsuario: 'opcao_todos',
+            CdTipoUsuario: '1',
             qt_registros_pagina: '9999'
         } as any
 
