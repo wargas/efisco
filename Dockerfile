@@ -16,17 +16,19 @@ RUN bun generate
 
 RUN bun build.ts
 
+CMD [ "bun", "bin/server.ts" ]
+
 # ------ RUNTIME --------
-FROM debian:12-slim
+# FROM debian:12-slim
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY --from=build /app/dist/busca /app/busca
-COPY --from=build /app/dist/server /app/server
-COPY --from=build /app/dist/usuario /app/usuario
-COPY --from=build /app/dist/doacoes /app/doacoes
-COPY --from=build /app/dist/login /app/login
+# COPY --from=build /app/dist/busca /app/busca
+# COPY --from=build /app/dist/server /app/server
+# COPY --from=build /app/dist/usuario /app/usuario
+# COPY --from=build /app/dist/doacoes /app/doacoes
+# COPY --from=build /app/dist/login /app/login
 
-EXPOSE 3333
+# EXPOSE 3333
 
-CMD [ "/app/server" ]
+# CMD [ "/app/server" ]

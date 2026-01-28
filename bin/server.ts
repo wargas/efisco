@@ -20,6 +20,4 @@ app.listen({port: 3001, host: '0.0.0.0'})
 
 app.server.on('listening', async () => {
     console.log('rodando');
-
-    await workerDoacao.run()
 })
