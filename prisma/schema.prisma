@@ -24,6 +24,7 @@ model Processo {
   valor_imposto Float?
   data_lancamento String?
   usuario_lancamento String?
+  data_doacao String?
   historico Historico[]
 
   @@index([situacao,numero_protocolo])
@@ -45,4 +46,27 @@ model Usuario {
   nome String
   cpf String
   processos Int @default(0)
+}
+
+model Doadores {
+  id String @id
+  cpf String
+  protocolo String
+}
+
+model Adquirente {
+  id String @id
+  protocolo String
+  cpf String 
+  nome String
+  quinhao String
+}
+
+model Bens {
+  id String @id
+  protocolo String
+  tipo String
+  classificao String
+  descricao String
+  valor_declarado String
 }

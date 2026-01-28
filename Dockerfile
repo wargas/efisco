@@ -23,7 +23,8 @@ WORKDIR /app
 
 COPY --from=build /app/dist/busca /app/busca
 COPY --from=build /app/dist/server /app/server
-COPY --from=build /app/dist/server /app/server
+COPY --from=build /app/dist/usuario /app/usuario
+COPY --from=build /app/dist/doacoes /app/doacoes
 
 EXPOSE 3333
 
