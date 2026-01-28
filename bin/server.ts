@@ -1,43 +1,25 @@
-import { Hono } from "hono";
-import { EFisco } from "../src/Efisco";
-import { prisma } from "../src/prisma";
-import { authMiddleware } from "../src/middleware";
-import { logger } from 'hono/logger';
-const efisco = EFisco.factory();
+import { createBullBoard } from '@bull-board/api'
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter'
+import { FastifyAdapter } from '@bull-board/fastify'
+import fastify from 'fastify'
+import { queueDoacao, workerDoacao } from '../src/queue-doacao'
 
-const app = new Hono();
+const app = fastify()
 
-app.use(logger());
+const adapter = new FastifyAdapter()
 
-app.get('/status', authMiddleware, async ctx => {
-    await efisco.start();
-
-    return Response.json({ status: 'ok', user: efisco.user });
+createBullBoard({
+    queues: [new BullMQAdapter(queueDoacao)],
+    serverAdapter: adapter
 })
 
-app.get('/list', authMiddleware, async ctx => {
-    const processos = await prisma.processo.findMany();
+adapter.setBasePath('/queues')
+app.register(adapter.registerPlugin(), {prefix: '/queues'})
 
-    return Response.json(processos)
+app.listen({port: 3001, host: '0.0.0.0'})
+
+app.server.on('listening', async () => {
+    console.log('rodando');
+
+    await workerDoacao.run()
 })
-
-app.post('/insert', authMiddleware, async (ctx) => {
-    const data: any = await ctx.req.json();
-
-    const result = await prisma.processo.create({
-        data: {
-            id: data.numero_protocolo,
-            numero_protocolo: data.numero_protocolo,
-            data_registro: '',
-            natureza: '',
-            interessado: '',
-            situacao: '',
-            portador: '',
-            valor_imposto: 0
-        }
-    })
-
-    return Response.json(result);
-})
-
-export default app;

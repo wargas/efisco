@@ -2,6 +2,8 @@ import { cookieStore } from '../../src/cookie-store';
 import { ServiceDetalhe } from '../../src/service-detalhe';
 
 
+
+
 const service = ServiceDetalhe.factory()
 
 await cookieStore.removeAllCookies()

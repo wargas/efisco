@@ -3,6 +3,9 @@ import { ServiceDetalhe } from "../src/service-detalhe";
 
 const service = ServiceDetalhe.factory()
 
+await service.start()
+await service.login()
+
 while (true) {
 
     await service.start();
