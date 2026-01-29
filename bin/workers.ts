@@ -1,3 +1,7 @@
+import { workerAvaliacao } from "../src/queue-avaliacao";
 import { workerDoacao } from "../src/queue-doacao";
 
-await workerDoacao.run()
+await Promise.all([
+    workerDoacao.run(),
+    workerAvaliacao.run()
+]) 

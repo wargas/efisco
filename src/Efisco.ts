@@ -25,8 +25,9 @@ export class EFisco {
         const data: Record<string, string> = {}
 
         Array.from(inputs).filter(i => !!i.name).forEach(input => {
-            const { name, value } = input;
+            const { name, value, type} = input;
 
+            if(type == 'button') return;
             if (['btt_localizar', 'btt_detalhar', 'btt_desistir'].includes(name)) return;
 
             data[name] = value

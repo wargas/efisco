@@ -70,3 +70,14 @@ model Bens {
   descricao String
   valor_declarado String
 }
+
+model Avaliacao {
+  id String @id
+  protocolo String
+  tipo String
+  classificao String
+  descricao String
+  data String
+  valor_avaliado Float
+  base_calculo Float
+}
