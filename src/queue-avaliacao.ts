@@ -27,9 +27,12 @@ export const workerAvaliacao = new Worker<string>(queueName, async job => {
 
     await prisma.$transaction(async (tx) => {
         for await (var item of avaliacao) {
+            await tx.avaliacao.deleteMany({
+                where: { protocolo: item.protocolo }
+            })
             await tx.avaliacao.create({
                 data: {
-                    id: `${item.protocolo}:${avaliacao.indexOf(item)+1}`,
+                    id: `${item.protocolo}:${avaliacao.indexOf(item) + 1}`,
                     tipo: item.tipo,
                     classificao: item.classificacao,
                     descricao: item.descricao,
