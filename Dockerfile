@@ -12,9 +12,9 @@ RUN bun install
 
 COPY . .
 
-RUN bun generate
-
 RUN bun build.ts
+
+EXPOSE 3000
 
 CMD [ "bun", "bin/server.ts" ]
 
