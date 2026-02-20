@@ -9,7 +9,7 @@ await service.start();
 
 await service.login();
 
-await service.setProtocolo('2025.000000671378-91');
+await service.setProtocolo('2025.000012123711-08');
 
 for await(var item of service.lista) {
     // const detalhe = await service.detalhe(item.chave)

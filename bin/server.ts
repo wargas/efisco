@@ -25,6 +25,6 @@ app.register(adapter.registerPlugin(), {prefix: '/queues'})
 app.listen({port: 3001, host: '0.0.0.0'})
 
 app.server.on('listening', async () => {
-    await import('./workers')
     console.log('rodando');
+    await import('./workers')
 })

@@ -1,7 +1,6 @@
 import { prisma } from '../src/prisma'
 import { ServiceEntradas } from '../src/service-entradas';
-import { eachDayOfInterval, formatDate } from 'date-fns'
-import { $ } from 'bun';
+import { eachWeekOfInterval, endOfWeek, formatDate } from 'date-fns'
 import { cookieStore } from '../src/cookie-store';
 
 
@@ -17,11 +16,16 @@ console.log('Usuário logado:', service.user.nome);
 const start = new Date('2025-01-02');
 const end = new Date()
 
-const days = eachDayOfInterval({ start, end })
+const weeks = eachWeekOfInterval({start, end})
 
-for await (var day of days.reverse()) {
-    const formated = formatDate(day, 'dd/MM/yyyy');
-    await service.setIntervalo(formated, formated)
+
+for await (var startWeek of weeks.reverse()) {
+    var stepTime = Bun.nanoseconds()
+    const endWeek = endOfWeek(startWeek);
+
+    const formatedStart = formatDate(startWeek, 'dd/MM/yyyy');
+    const formatedEnd = formatDate(endWeek, 'dd/MM/yyyy');
+    await service.setIntervalo(formatedStart, formatedEnd);
 
     for await (const item of service.lista) {
 
@@ -108,5 +112,7 @@ for await (var day of days.reverse()) {
 
     }
 
-    console.log(formated, service.lista.length)
+    const currentStepTime = Bun.nanoseconds()
+
+    console.log(`${formatedStart} - ${formatedEnd} em ${(currentStepTime - stepTime)/1_000_000}/MS`, service.lista.length)
 }
