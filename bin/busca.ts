@@ -102,7 +102,7 @@ for await (var startWeek of weeks.reverse()) {
                         console.log(`Atualizado: ${processo.id}`)
 
                         if(process.env.WEBHOOK_URL) {
-                            await fetch(process.env.WEBHOOK_URL)
+                            //await fetch(process.env.WEBHOOK_URL)
                         }
                     }
                 } catch (error) {
