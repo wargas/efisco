@@ -15,8 +15,6 @@ for await(var item of service.lista) {
     // const detalhe = await service.detalhe(item.chave)
 
     const avaliacao = await service.avaliacao(item.chave)
-
-    console.log({avaliacao})
     // const doadores = await service.transmitente()
     // const adquirentes = await service.adquirente()
     // const bens = await service.bens()

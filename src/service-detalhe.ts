@@ -1,170 +1,184 @@
 import { EFisco } from "./Efisco";
 
 export class ServiceDetalhe extends EFisco {
+  static override factory() {
+    return new ServiceDetalhe();
+  }
 
-    static override factory() {
-        return new ServiceDetalhe()
+  async setProtocolo(protocolo: string) {
+    {
+      await this.start();
+      await this.navigateTo("sfi_trb_gcd/PRManterProcessoICD", "190600");
+
+      await this.sendData("sfi_trb_gcd/PRManterProcessoICD", {
+        ...this.formFields,
+        evento: "processarFiltroConsulta",
+        NuProtocoloICD: protocolo,
+      });
     }
+  }
 
-    async setProtocolo(protocolo: string) {
-        {
-            await this.start();
-            await this.navigateTo('sfi_trb_gcd/PRManterProcessoICD', '190600');
+  async detalhe(chave: string) {
+    await this.sendData("sfi_trb_gcd/PRManterProcessoICD", {
+      ...this.formFields,
+      chave_primaria: chave,
+      evento: "exibirDetalhamentoConsulta",
+    });
 
-            await this.sendData('sfi_trb_gcd/PRManterProcessoICD', {
-                ...this.formFields,
-                evento: 'processarFiltroConsulta',
-                NuProtocoloICD: protocolo
-            })
-        }
-    }
+    const dataDoacao = this.document.querySelector(
+      "[name=DtAberturaProcesso_Doacao]",
+    );
+    const protocolo = this.document.querySelector("[name=NuProtocoloICD]");
 
-    async detalhe(chave: string) {
-        await this.sendData('sfi_trb_gcd/PRManterProcessoICD', {
-            ...this.formFields,
-            chave_primaria: chave,
-            evento: 'exibirDetalhamentoConsulta',
-        })
+    return {
+      data_doacao: dataDoacao?.getAttribute("value")!,
+      protocolo: protocolo
+        ?.getAttribute("value")!
+        .replace(/\D/g, "")
+        .replace(/(\d{4})(\d{12})(\d{2})/, "$1.$2-$3")!,
+    };
+  }
 
-        const dataDoacao = this.document.querySelector('[name=DtAberturaProcesso_Doacao]');
-        const protocolo = this.document.querySelector('[name=NuProtocoloICD]');
+  async transmitente() {
+    const data: any = {
+      ...this.formFields,
+      NuProtocoloICD: this.formFields["NuProtocoloICD"]!.replaceAll(/\D/g, ""),
+      evento: "exibirFiltroConsulta",
+    };
 
+    delete data["btt_encerrarsessao"];
 
-        return {
-            data_doacao: dataDoacao?.getAttribute('value')!,
-            protocolo: protocolo?.getAttribute('value')!
-                .replace(/\D/g, "")
-                .replace(/(\d{4})(\d{12})(\d{2})/, "$1.$2-$3")!,
-        }
-    }
+    await this.sendData("sfi_trb_gcd/PRManterTransmitente", data);
 
-    async transmitente() {
-        const data: any = {
-            ...this.formFields,
-            NuProtocoloICD: this.formFields['NuProtocoloICD']!.replaceAll(/\D/g, ""),
-            evento: 'exibirFiltroConsulta',
-        }
+    const rows = this.document.querySelectorAll("#table_tabeladados tr+tr");
 
-        delete data['btt_encerrarsessao']
+    return Array.from(rows).map((row) => {
+      const cells = row.querySelectorAll("td");
 
-        await this.sendData('sfi_trb_gcd/PRManterTransmitente', data)
+      return {
+        nome: cells[1]?.textContent?.trim()!,
+        cpf: cells[2]?.textContent?.trim()!,
+      };
+    });
+  }
 
-        const rows = this.document.querySelectorAll('#table_tabeladados tr+tr');
+  async adquirente() {
+    const data: any = {
+      ...this.formFields,
+      NuProtocoloICD: this.formFields["NuProtocoloICD"]!.replaceAll(/\D/g, ""),
+      evento: "exibirFiltroConsulta",
+    };
 
-        return Array.from(rows).map(row => {
-            const cells = row.querySelectorAll('td')
+    delete data["btt_encerrarsessao"];
 
-            return {
-                nome: cells[1]?.textContent?.trim()!,
-                cpf: cells[2]?.textContent?.trim()!,
-            }
-        })
-    }
+    await this.sendData("sfi_trb_gcd/PRManterAdquirente", data);
 
-    async adquirente() {
-        const data: any = {
-            ...this.formFields,
-            NuProtocoloICD: this.formFields['NuProtocoloICD']!.replaceAll(/\D/g, ""),
-            evento: 'exibirFiltroConsulta',
-        }
+    const rows = this.document.querySelectorAll("#table_tabeladados tr+tr");
 
-        delete data['btt_encerrarsessao']
+    return Array.from(rows).map((row) => {
+      const cells = row.querySelectorAll("td");
 
-        await this.sendData('sfi_trb_gcd/PRManterAdquirente', data)
+      return {
+        nome: cells[1]?.textContent?.trim()!,
+        cpf: cells[2]?.textContent?.trim()!,
+        email: cells[3]?.textContent?.trim()!,
+        telefone: cells[4]?.textContent?.trim()!,
+        parentesco: cells[5]?.textContent?.trim()!,
+        quinhao: cells[6]?.textContent?.trim()!,
+      };
+    });
+  }
 
-        const rows = this.document.querySelectorAll('#table_tabeladados tr+tr');
+  async bens() {
+    const data: any = {
+      ...this.formFields,
+      NuProtocoloICD: this.formFields["NuProtocoloICD"]!.replaceAll(/\D/g, ""),
+      evento: "exibirFiltroConsulta",
+    };
 
-        return Array.from(rows).map(row => {
-            const cells = row.querySelectorAll('td')
+    delete data["btt_encerrarsessao"];
 
-            return {
-                nome: cells[1]?.textContent?.trim()!,
-                cpf: cells[2]?.textContent?.trim()!,
-                email: cells[3]?.textContent?.trim()!,
-                telefone: cells[4]?.textContent?.trim()!,
-                parentesco: cells[5]?.textContent?.trim()!,
-                quinhao: cells[6]?.textContent?.trim()!,
-            }
-        })
-    }
+    await this.sendData("sfi_trb_gcd/PRManterBem", data);
 
-    async bens() {
-        const data: any = {
-            ...this.formFields,
-            NuProtocoloICD: this.formFields['NuProtocoloICD']!.replaceAll(/\D/g, ""),
-            evento: 'exibirFiltroConsulta',
-        }
+    const rows = this.document.querySelectorAll("#table_tabeladados tr+tr");
 
-        delete data['btt_encerrarsessao']
+    return Array.from(rows).map((row) => {
+      const cells = row.querySelectorAll("td");
 
-        await this.sendData('sfi_trb_gcd/PRManterBem', data)
+      return {
+        tipo: cells[1]?.textContent?.trim()!,
+        classificao: cells[2]?.textContent?.trim()!,
+        descricao: cells[3]?.textContent?.trim()!,
+        isencao: cells[4]?.textContent?.trim()!,
+        valor_declarado: cells[5]?.textContent?.trim()!,
+        situacao: cells[6]?.textContent?.trim()!,
+      };
+    });
+  }
 
-        const rows = this.document.querySelectorAll('#table_tabeladados tr+tr');
+  async avaliacao(chave: string) {
+    const data = {
+      ...this.formFields,
+      chave_primaria: chave,
+      nao_utilizar_id_contexto_sessao: "S",
+      NuProtocoloICDPesquisa: chave.substring(0, 18),
+      InUsuarioPodeIncluirProcesso: "N",
+      evento: "exibirFiltroConsulta",
+    };
 
-        return Array.from(rows).map(row => {
-            const cells = row.querySelectorAll('td')
+    await this.sendData("sfi_trb_gcd/PRAvaliarBem", data);
 
-            return {
-                tipo: cells[1]?.textContent?.trim()!,
-                classificao: cells[2]?.textContent?.trim()!,
-                descricao: cells[3]?.textContent?.trim()!,
-                isencao: cells[4]?.textContent?.trim()!,
-                valor_declarado: cells[5]?.textContent?.trim()!,
-                situacao: cells[6]?.textContent?.trim()!,
-            }
-        })
-    }
+    const rows = this.document.querySelectorAll("#table_tabeladados tr+tr+tr");
+    const protocolo =
+      this.document
+        .querySelector(
+          "#table_filtro > tbody > tr:nth-child(2) > td:nth-child(2)",
+        )
+        ?.textContent.trim() ?? "";
 
-    async avaliacao(chave: string) {
-        const data = {
-            ...this.formFields,
-            chave_primaria: chave,
-            nao_utilizar_id_contexto_sessao: 'S',
-            NuProtocoloICDPesquisa: chave.substring(0, 18),
-            InUsuarioPodeIncluirProcesso: 'N',
-            evento: 'exibirFiltroConsulta',
-        }
+    return Array.from(rows).map((row) => {
+      const cells = row.querySelectorAll("td");
 
+      return {
+        protocolo,
+        situacao: cells[1]?.textContent?.trim()!,
+        tipo: cells[2]?.textContent?.trim()!,
+        classificacao: cells[3]?.textContent?.trim()!,
+        descricao: cells[4]?.textContent?.trim()!,
+        data: cells[6]?.textContent?.trim()!,
+        valor:
+          parseInt(cells[7]?.textContent?.trim()!.replaceAll(/\D/g, "")!) / 100,
+        base_calculo:
+          parseInt(cells[8]?.textContent?.trim()!.replaceAll(/\D/g, "")!) / 100,
+      };
+    });
+  }
 
-        await this.sendData('sfi_trb_gcd/PRAvaliarBem', data)
+  get lista() {
+    const rows = this.document.querySelectorAll("#table_tabeladados tr+tr");
 
-        const rows = this.document.querySelectorAll('#table_tabeladados tr+tr+tr');
-        const protocolo = this.document.querySelector('#table_filtro > tbody > tr:nth-child(2) > td:nth-child(2)')?.textContent.trim() ?? ''
+    return Array.from(rows).map((row) => {
+      const cells = row.querySelectorAll("td");
+      const input = row.querySelector("input")!;
 
-        return Array.from(rows).map(row => {
-            const cells = row.querySelectorAll('td')
-
-            return {
-                protocolo,
-                situacao: cells[1]?.textContent?.trim()!,
-                tipo: cells[2]?.textContent?.trim()!,
-                classificacao: cells[3]?.textContent?.trim()!,
-                descricao: cells[4]?.textContent?.trim()!,
-                data: cells[6]?.textContent?.trim()!,
-                valor: parseInt(cells[7]?.textContent?.trim()!.replaceAll(/\D/g,"")!)/100,
-                base_calculo: parseInt(cells[8]?.textContent?.trim()!.replaceAll(/\D/g,"")!)/100,
-            }
-        })
-    }
-
-    get lista() {
-        const rows = this.document.querySelectorAll('#table_tabeladados tr+tr');
-
-        return Array.from(rows).map(row => {
-            const cells = row.querySelectorAll('td')
-            const input = row.querySelector('input')!
-
-            return {
-                chave: input.getAttribute('value')!,
-                data_registro: String(cells[1]?.textContent?.trim()).replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3-$2-$1"),
-                numero_protocolo: cells[2]?.textContent?.trim(),
-                natureza: cells[3]?.textContent?.trim(),
-                interessado: cells[4]?.textContent?.trim(),
-                situacao: cells[5]?.textContent?.trim(),
-                portador: cells[6]?.textContent?.trim(),
-                valorImposto: parseFloat(cells[7]?.textContent?.trim()?.replaceAll('.', '').replace(',', '.') || '0'),
-            }
-        })
-
-    }
+      return {
+        chave: input.getAttribute("value")!,
+        data_registro: String(cells[1]?.textContent?.trim()).replace(
+          /(\d{2})\/(\d{2})\/(\d{4})/,
+          "$3-$2-$1",
+        ),
+        numero_protocolo: cells[2]?.textContent?.trim(),
+        natureza: cells[3]?.textContent?.trim(),
+        interessado: cells[4]?.textContent?.trim(),
+        situacao: cells[5]?.textContent?.trim(),
+        portador: cells[6]?.textContent?.trim(),
+        valorImposto: parseFloat(
+          cells[7]?.textContent
+            ?.trim()
+            ?.replaceAll(".", "")
+            .replace(",", ".") || "0",
+        ),
+      };
+    });
+  }
 }
