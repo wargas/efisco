@@ -5,7 +5,7 @@ export class ServiceDetalhe extends EFisco {
     return new ServiceDetalhe();
   }
 
-  async setProtocolo(protocolo: string) {
+  async setProtoco////lo(protocolo: string) {
     {
       await this.start();
       await this.navigateTo("sfi_trb_gcd/PRManterProcessoICD", "190600");

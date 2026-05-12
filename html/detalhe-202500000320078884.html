@@ -1,0 +1,1079 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+<HEAD>
+<TITLE>Detalhamento do Retorno da Ação Fiscal</TITLE>
+<LINK href="/sfi/theme/sefaz_pe.css" rel="stylesheet" type="text/css">
+
+<SCRIPT language="JavaScript" type="text/javascript" src="/sfi/js/biblioteca_funcoes_principal.js"></SCRIPT>
+<SCRIPT language="JavaScript" type="text/javascript" src="/sfi/js/biblioteca_funcoes_text.js"></SCRIPT>
+<SCRIPT language="JavaScript" type="text/javascript" src="/sfi/js/biblioteca_funcoes_datahora.js"></SCRIPT>
+<SCRIPT language="JavaScript" type="text/javascript" src="/sfi/js/biblioteca_funcoes_ie.js"></SCRIPT>
+<SCRIPT language="JavaScript" type="text/javascript" src="/sfi/js/biblioteca_funcoes_cnpfcnpj.js"></SCRIPT>
+<SCRIPT language="JavaScript" type="text/javascript" src="/sfi/js/biblioteca_funcoes_crc.js"></SCRIPT>
+<SCRIPT language="JavaScript" type="text/javascript" src="/sfi/js/biblioteca_funcoes_documento.js"></SCRIPT>
+<SCRIPT language="JavaScript" type="text/javascript" src="/sfi/js/biblioteca_funcoes_moeda.js"></SCRIPT>
+<SCRIPT language="JavaScript" type="text/javascript" src="/sfi/js/biblioteca_funcoes_select.js"></SCRIPT>
+<SCRIPT language="JavaScript" type="text/javascript" src="/sfi/js/biblioteca_funcoes_radiobutton.js"></SCRIPT>
+<SCRIPT language="JavaScript" type="text/javascript" src="/sfi/js/biblioteca_funcoes_editortexto.js"></SCRIPT>
+
+
+<SCRIPT language="JavaScript" type="text/javascript">
+
+
+// Acionado no pelo botão "Detalhar"
+function exibirDetalhamentoConsulta(pAcao, pEvento) {
+	if (!isRadioButtonConsultaSelecionado("document.frm_principal.rdb_consulta"))
+		return;
+	
+	submeterFormulario(pAcao, pEvento);
+}
+// Retorna para o formulario de retorno
+function desistir(pAcao, pEvento) {
+	document.frm_principal.nao_utilizar_contexto_sessao.value = 'N';
+	submeterFormulario(pAcao, pEvento);
+}
+
+function exibirJustificativas(pAcao, pEvento) {
+	if(document.frm_principal.justificativa.value == ""){
+		exibirMensagem("Esta demanda não possui atividades ou questões obrigatórias não respondidas.");
+		return false;
+	}
+
+	submeterFormulario(pAcao, pEvento);
+}
+
+function exibirDetalhamentoProcesso(pAcao, pEvento, pChavePrimaria){
+    document.frm_principal.chavePrimariaDetalhamento.value = pChavePrimaria;
+
+    pAcao = "/" + "sfi_trb_gaf" + "/" + pAcao;
+    submeterFormulario(pAcao, pEvento);
+    
+    document.frm_principal.chavePrimariaDetalhamento.value = "";
+}
+
+//funcao para detalhar os anexos
+function exibirDetalhamentoAnexo(pAcao, pEvento, pNuItem1){
+	
+	ocultarMensagemAguarde();
+
+	document.frm_principal.chavePrimariaDetalhamento.value = document.getElementById("chaveprimaria1" + pNuItem1).value;
+	
+	pAcao = "/" + "sfi_trb_gaf" + "/" + pAcao;
+	
+	submeterFormulario(pAcao, pEvento);
+}
+function exibirIntegracao(pAcao, pEvento, url) {
+
+	queryString1 = document.frm_principal.nuSolicitacaoAF.name + "=" + document.frm_principal.nuSolicitacaoAF.value;
+	queryString2 = document.frm_principal.nuDemandaAF.name + "=" + document.frm_principal.nuDemandaAF.value;
+	queryString3 = document.frm_principal.indicador_filtro_oculto.name + "=" + document.frm_principal.indicador_filtro_oculto.value;
+	url = adicionarQueryStringURL(url, queryString1);
+	url = adicionarQueryStringURL(url, queryString2);
+	url = adicionarQueryStringURL(url, queryString3);
+	
+	abrirJanelaAuxiliar(url, true);
+}
+
+function exibirIntegracaoOperacaoFiscal(pAcao, pEvento, url) {
+
+    submeterFormularioJanelaAuxiliar(pAcao, pEvento);
+}
+
+
+function gerarTermoEncerramento(pAcao, pEvento) {
+	document.frm_principal.nao_utilizar_contexto_sessao.value = 'S';
+	submeterFormularioJanelaAuxiliar(pAcao, pEvento);
+}
+
+function exibirDetalheRetorno(pAcao, pEvento, pNuItem2) {
+		
+	document.frm_principal.chavePrimariaDetalhamento.value = document.getElementById("chaveprimariaRetorno_" + pNuItem2).value;
+	
+	pAcao = "/" + "sfi_trb_gaf" + "/" + pAcao;
+	
+	submeterFormulario(pAcao, pEvento);
+}
+
+function detalharNotaFiscal(pRegistroNF){
+    if(pRegistroNF != ""){
+	    document.frm_principal.RegistroNF.value = pRegistroNF;
+    }
+    submeterFormulario('PRAdministrarDemandaAcaoFiscal', 'exibirDetalhamentoNotaFiscal');
+}
+
+//Exibe o formulário de devolução ação fiscal
+function exibirDevolucaoOuFechamento(pAcao, pEvento) {
+		
+	if(document.getElementById("inputParecerFinalDaAcao") != null) {
+		exibirMensagem("O fechamento ou a devolução da demanda só pode ser realizada para \r\r\ndemandas em revisão.");
+		return;
+	}
+	
+	if(document.getElementById("inputSituacao") != null) {
+		var situacao = document.getElementById("inputSituacao").value;
+		if(situacao != "EM REVISÃO" || situacao == null){		
+			exibirMensagem("O fechamento ou a devolução da demanda só pode ser realizada para \r\r\ndemandas em revisão.");
+			return;
+		}
+	}
+	
+	submeterFormulario(pAcao, pEvento);
+}
+
+
+</SCRIPT>
+<META name="GENERATOR" content="IBM WebSphere Studio">
+</HEAD>
+
+
+
+<BODY class="paginadados">
+<FORM name="frm_principal" method="post">
+
+<INPUT type="hidden" id="id_contexto_sessao" name="id_contexto_sessao" value="644">
+<INPUT type="hidden" id="evento" name="evento" value="">
+<INPUT type="hidden" id="justificativa" name="txJustificativa" value="Não se aplica.">
+<INPUT type="hidden" id="indicador_filtro_oculto" name="indicador_filtro_oculto" value="">
+<INPUT type="hidden" id="nuSolicitacaoAF" name="IntegracaoNuProtocoloSolicitacaoAF" value="2025.000002660629-54">
+<INPUT type="hidden" id="nuDemandaAF" name="IntegracaoNuDemandaAF" value="2025.000003200788-84">
+<INPUT type="hidden" id="chavePrimariaDetalhamento" name="chave_primaria">
+<INPUT type="hidden" id="isDemandaAcaoFiscalAjuda" name ="isDemandaAcaoFiscalAjuda" value="S">
+<INPUT type="hidden" name="NmContextoWebRetorno" value="sfi_trb_gaf">
+<INPUT type="hidden" name="NmPRRetorno" value="PRAdministrarDemandaAcaoFiscal">
+<INPUT type="hidden" name="NmEventoRetorno" value="exibirDetalhamentoRetorno">
+<INPUT type="hidden" name="InBotaoSelecionar" value="">
+<INPUT type="hidden" id="nuProtocolo" name="Anexo_NuProtocolo" value="202500000320078884">
+<INPUT type="hidden" name="Anexo_InFiltroDemandaProcesso" value="D">
+<INPUT type="hidden" name="nm_path_servlet_pai" value="PRConsultarDemandaAcaoFiscal">
+<INPUT type="hidden" id="nao_utilizar_contexto_sessao" name="nao_utilizar_id_contexto_sessao" value="S">
+ <INPUT type="hidden" id="RegistroNF" name="RegistroNF" value="">
+ <INPUT type="hidden" id="SqProrrogacao" name="SqProrrogacao" value="">
+
+<TABLE id="table_conteiner" class="conteiner" cellpadding="0" cellspacing="0">
+    <TBODY>
+        <script>console.log("%cAtenção!", "color: red; font-size: 35px; font-weight:bold;");console.log("%c" + "Este é um recurso do navegador voltado para desenvolvedores.", "color:#9c9c9c; font-weight: bold;font-size:18px;")</script><script>const getLimiteNomeFuncionalidade = () => {return 40}</script><script>const getArea = (c) => {if(c<=299999){return 'tributario';}if(c<=499999){return 'financeiro';}if(c<=699999){return 'planejamento';}if(c<=899999){return 'administrativo';}console.error('Não foi possível determinar uma área a partir do código do item, código: '+c); return '   ';}</script><script>const flagJanelaAuxiliar = '(*)';const flagJanelaComParametros = '(#)';</script><input type="hidden" name="id_sessao" value="3051681AA87F4932B6815C188F93E3F8">
+<input type="hidden" name="nm_path_servlet_anterior" value="/sfi_trb_gaf/PRConsultarDemandaAcaoFiscal">
+<input type="hidden" name="nm_path_jsp_anterior" value="jsp/servico01/administrar_demanda/p04detalhamentoretorno.jsp">
+<input type="hidden" name="in_enderecodomicilio_valido" value="">
+<input type="hidden" name="cd_menu" value="6997528">
+<input type="hidden" name="dt_hoje_framework" value="03/05/2026">
+<input type="hidden" name="hr_hoje_framework" value="08:26:19">
+<input type="hidden" name="cd_usuario" value="6997528">
+<input type="hidden" name="cd_tipo_usuario_sca" value="1">
+<input type="hidden" name="historico" value="Detalhamento do Retorno da Ação Fiscal">
+<input type="hidden" name="nm_titulo_pagina" value="Detalhamento do Retorno da Ação Fiscal">
+<input type="hidden" name="in_janela_auxiliar" value="">
+<input type="hidden" name="in_formulario_submetido" value="">
+<style>:root {--cor-media-fechada:#963700;--cor-fechada:#5C0000;--cor-botao-hover:#963700;--cor-borda-botao-focus:#F38427;--cor-suave-background:#FFF4EB;--cor-media-background:#F9DCC4;--cor-principal:#B45000;--cor-botao-press:#791D00;--cor-gradiente:#E3D1C3;--cor-area:#B45000;--cor-linha-destaque-tabela:#F9DCC4;--cor-borda-campo-obrigatorio:#E69C61;}</style><script>const ir = document.createElement('link');ir.rel = 'stylesheet';ir.type = 'text/css';ir.href = '/sfi/css/sefaz_pe_interface_rica.css?v=1.0.0';document.head.appendChild(ir);</script><script>if (sessionStorage.getItem('possuiAcessoCdn') == null) {function success() {sessionStorage.setItem('possuiAcessoCdn', true);}function error() {sessionStorage.setItem('possuiAcessoCdn', false);}function fmwTestarAcessoCdn() {  var xmlHttp = new XMLHttpRequest();  xmlHttp.onload = success;  xmlHttp.onerror = error;  xmlHttp.open('GET','https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.1/esm/dom-utils/getComputedStyle.min.js');  xmlHttp.send();}}if (sessionStorage.getItem('possuiAcessoCdn') == 'true') {document.write("<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css' integrity='sha512-P5MgMn1jBN01asBgU0z60Qk4QxiXo86+wlFahKrsQf37c9cro517WzVSPPV1tDKzhku2iJ2FVgL67wG03SGnNA==' crossorigin='anonymous' referrerpolicy='no-referrer' />");document.write("<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css' integrity='sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==' crossorigin='anonymous' referrerpolicy='no-referrer' />");document.write("<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/Swiper/6.7.5/swiper-bundle.min.css' integrity='sha512-IZyebVAIO5IWMM3Jcx/Z0awNNBq1YcqWW34QlhQy9fzM1XxzmX3gB/YmbPkVuH/EU8QvpeY92EGS45iW/YKt1g==' crossorigin='anonymous' referrerpolicy='no-referrer' />");} else {document.write("<link rel='stylesheet' href='/sfi/cdn/bootstrap.min.css'>");document.write("<link rel='stylesheet' href='/sfi/cdn/all.min.css'>");document.write("<link rel='stylesheet' href='/sfi/cdn/swiper-bundle.min.css'>");}</script><link rel="stylesheet" href="/sfi/css/sefaz_pe_sidebar.css?v=1.0.0"><link rel="stylesheet" href="/sfi/css/sefaz_pe_variaveis.css?v=1.0.0"><link rel="stylesheet" href="/sfi/css/sefaz_pe_tema.css?v=1.0.1"><div class="container-fluid p-0"><div class="container-fluid m-0 p-0"><div id="acessibilidade" class="row m-0" title="Ambiente: Producao"><div class="col-lg-3 col-md-4 col-sm-6 col-6"><span class="d-md-inline d-none">Acessibilidade:</span><button type="button" class="m-0" id="alto_contraste"><i class="fa fa-adjust"></i><span>Alto contraste</span></button></div><div class="col-lg-3 col-md-4 col-sm-6 col-6 mr-auto"><span class="d-md-inline d-none">Ir para:</span><div class="goto-topo d-inline"><a id="fmw_acessibilidade_topo" class="goto-top cursor-pointer" accesskey="1">Topo</a><span class="goto-topo-hotkey">1</span></div><div class="goto-conteudo d-inline"><a id="fmw_acessibilidade_conteudo" class="goto-top cursor-pointer" accesskey="2">Conteúdo</a><span class="goto-conteudo-hotkey">2</span></div></div></div></div><div id="nav" class="container-fluid"><div id="efisco_nav" class="row efisco-nav m-0"><div class="pt-2 pl-2 col-7 col-lg-2 col-md-8 navbar-logo align-items-end"><button id="home_button" type="button" class="p-0" ><img id="efisco_logo" class="d-none d-md-inline" src="/sfi/imagens/logotipo.png" alt="efisco" align="left"><img id="efisco_logo_responsivo" class="d-md-none d-sm-inline" src="/sfi/imagens/logotipo_responsivo.png" alt="efisco" align="left"></button></div><div class="col navbar-categorias"><ul id="nav_topo" class="row m-0 list-unstyled h-100 d-lg-flex d-none"></ul></div><div id="dropdown_login_button" class="col-5 col-md-4 align-self-end ml-auto pr-0"><div id="icones_nav"><div class="row m-0 p-lg-0 pb-2"><div id="div_dropdown_notificacoes" class="btn-group col-3 justify-content-center ml-auto"><a id="a_notificacoes" href="#" class="nav-link" data-toggle="dropdown"><span><i class="far fa-bell fa-fw"></i></span><span id="a_notificacoes_span_texto" class="d-md-inline d-none">Notificações</span></a><div id="dropdown_notificacoes" class="dropdown-menu dropdown-menu-right"><div id="div_mensagens" class="dropdown-bottom-line"><span class="subtitulo-dropdown d-block">Mensagens</span><div class="pt-2 pb-2"><a class="notification"><i id="icone_mensagens" class="far fa-envelope"></i></a></div></div><div id="div_protocolos" class="dropdown-bottom-line"><span class="subtitulo-dropdown d-block">Protocolos</span><div id="div_protocolos_row" class="d-inline-flex"><div class="p-2"><span>Unidade</span><div><a class="notification"><i id="icone_protocolos" class="far fa-clipboard"></i></a></div></div><div class="p-2"><span>Usuário</span><div><a class="notification"><i id="icone_protocolos_usuario" class="far fa-address-book"></i></a></div></div></div></div><div id="div_processos" class="dropdown-bottom-line"><span class="subtitulo-dropdown d-block">Processos</span><div id="div_processos_row" class="d-inline-flex"><div class="p-2"><span class="text-nowrap">Ações Fiscais</span><div><a class="notification"><i id="icone_acoes_fiscais" class="far fa-file"></i></a></div></div><div class="p-2"><span>Administrativo</span><div><a class="notification"><i id="icone_processos_administrativos" class="fas fa-sitemap"></i></a></div></div><div class="p-2"><span class="text-nowrap">Novos Fatos</span><div><a class="notification"><i id="icone_novos_fatos" class="far fa-copy"></i></a></div></div></div></div><div id="div_assinatura_pendente"><span class="subtitulo-dropdown d-block">Assinatura Pendente</span><div class="pt-2 pb-2"><a class="notification"><i id="icone_assinaturas_pendentes" class="fas fa-file-contract"></i></a></div></div></div></div><div id="div_dropdown_usuario" class="btn-group col-3 justify-content-center"><a id="a_usuario" href="#" class="nav-link" data-toggle="dropdown"><span><i class="far fa-user fa-fw"></i></span><span id="a_usuario_span_texto" class="d-md-inline d-none">Wargas</span></a><div id="dropdown_usuario" class="dropdown-menu dropdown-menu-right"><div id="div_codigo_usuario" class="dropdown-bottom-line text-nowrap p-2"><i class="fas fa-user fa-fw"></i></div><div id="div_ultimo_login" class="dropdown-bottom-line text-nowrap p-2"><i class="fas fa-user-clock fa-fw"></i></div><div id="div_ultima_acao" class="dropdown-bottom-line text-nowrap p-2"><i class="fas fa-clock fa-fw"></i></div><div id="div_logout" class="text-nowrap p-2"><a id="link_encerrar_sessao" class="sair" href="javascript:document.frm_principal.btt_encerrarsessao.click()"><span><i class="fas fa-power-off fa-fw"></i>Sair</span></a><input style="display:none" type="button" name="btt_encerrarsessao" class="botaooculto form-control" accesskey="q" onclick="setBotaoAtivado(this); setBotaoOperacaoAtivado(this);encerrarSessaoComCertificado('/sfi_com_sca/PREfetuarLogout')"></div></div></div></div></div></div></div><div class="row mt-2 mr-0 ml-0 d-flex d-lg-none justify-content-end"><div class="col-lg-7 col-md-12 navbar-categorias navbar-categorias-responsivo"><ul id="nav_topo_responsivo" class="row p-0 m-0 list-unstyled h-100"></ul></div></div></div><div id="navegacao"><div id="navegacao_interna" class="d-flex align-items-center"><div class="menu-nome">Detalhamento do Retorno da Ação Fiscal</div></div></div><div id="area_botoes_ferramentas"><div id="titulo_area_botoes_ferramentas" class="d-inline">Detalhamento do Retorno da Ação Fiscal</div></div></div><script>if (sessionStorage.getItem('possuiAcessoCdn') == null) {function success() {sessionStorage.setItem('possuiAcessoCdn', true);}function error() {sessionStorage.setItem('possuiAcessoCdn', false);}function fmwTestarAcessoCdn() {  var xmlHttp = new XMLHttpRequest();  xmlHttp.onload = success;  xmlHttp.onerror = error;  xmlHttp.open('GET','https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.1/esm/dom-utils/getComputedStyle.min.js');  xmlHttp.send();}}if (sessionStorage.getItem('possuiAcessoCdn') == 'true') {document.write("<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css' integrity='sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ==' crossorigin='anonymous' referrerpolicy='no-referrer' />");document.write("<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js' integrity='sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==' crossorigin='anonymous' referrerpolicy='no-referrer'><\/script>");document.write("<script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js' integrity='sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA==' crossorigin='anonymous' referrerpolicy='no-referrer'><\/script>");} else {document.write("<link rel='stylesheet' href='/sfi/css/jquery-ui.min.css'>");document.write("<script src='/sfi/js/jquery.js'><\/script>");document.write("<script src='/sfi/js/jquery-ui.min.js'><\/script>");}</script><script>if (sessionStorage.getItem('possuiAcessoCdn') == null) {function success() {sessionStorage.setItem('possuiAcessoCdn', true);}function error() {sessionStorage.setItem('possuiAcessoCdn', false);}function fmwTestarAcessoCdn() {  var xmlHttp = new XMLHttpRequest();  xmlHttp.onload = success;  xmlHttp.onerror = error;  xmlHttp.open('GET','https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.1/esm/dom-utils/getComputedStyle.min.js');  xmlHttp.send();}}if (sessionStorage.getItem('possuiAcessoCdn') == 'true') {document.write("<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js' integrity='sha512-wV7Yj1alIZDqZFCUQJy85VN+qvEIly93fIQAN7iqDFCPEucLCeNFz4r35FCo9s6WrpdDQPi80xbljXB8Bjtvcg==' crossorigin='anonymous' referrerpolicy='no-referrer'><\/script>");document.write("<script src='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js' integrity='sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ==' crossorigin='anonymous' referrerpolicy='no-referrer'><\/script>");document.write("<script src='https://cdnjs.cloudflare.com/ajax/libs/Swiper/6.7.5/swiper-bundle.min.js' integrity='sha512-jm5exnXjOC6mBpqBG81xU+GK4ybKq28mLihDCNj2E3RkzrfW/tSGt7Uy7wRSkedl95C4cH9+9lectBCGwEcD0g==' crossorigin='anonymous' referrerpolicy='no-referrer'><\/script>");} else {document.write("<script src='/sfi/cdn/bootstrap.bundle.min.js'><\/script>");document.write("<script src='/sfi/cdn/all.min.js'><\/script>");document.write("<script src='/sfi/cdn/swiper-bundle.min.js'><\/script>");}</script><script src="/sfi/js/mensagens_globais.js?v=1.0.0"></script><script src="/sfi/js/sefaz_pe_sidebar.js?v=1.0.3"></script><script type="module" src="/sfi/js/montadores/montar_menu.js?v=1.0.1"></script><script type="module" src="/sfi/js/montadores/montar_nav_dropdown.js?v=1.0.0"></script><script>if (!window.DWREngine) {const importDwrEngineFmw = document.createElement('script');importDwrEngineFmw.type = 'text/javascript';importDwrEngineFmw.src = '/sfi/dwr/engine.js';document.getElementsByTagName('head')[0].appendChild(importDwrEngineFmw);const importDwrUtilFmw = document.createElement('script');importDwrUtilFmw.type = 'text/javascript';importDwrUtilFmw.src = '/sfi/dwr/util.js';document.getElementsByTagName('head')[0].appendChild(importDwrUtilFmw);}</script><script src="/sfi_com_sca/dwr/interface/processadorAjaxDwrSCAMenu.js"></script><script type="module" src="/sfi/js/montadores/montar_botao_home.js?v=1.0.0"></script><script type="module" src="/sfi/js/montadores/montar_favoritos_modal.js?v=1.0.1"></script><script type="module" src="/sfi/js/montadores/montar_sidebar.js?v=1.0.1"></script><script type="module" src="/sfi/js/montadores/montar_estrela_interna.js?v=1.0.1"></script>
+        <TR>
+        <TD class="espacadorB2">
+        <TABLE class="areatrabalho"> 	
+        <TR>
+            <TD class="conteinerconteudodados">
+            <DIV id="div_conteudodados" class="conteudodados">
+            <TABLE id="table_conteudodados" class="conteudodados" cellpadding="0" cellspacing="0">
+                <TBODY>
+	                <TR>
+                        <TH class="textoseparadorgrupocampos">Informações da Ação Fiscal</TH>
+                        <TD colspan="3"><HR></TD>
+                    </TR>
+                    <TR>
+	                    <TH class="campoformulario" width="15%">Protocolo da Ação Fiscal:</TH>
+                        <TD class="campoformulario" colspan="3"><INPUT type="text" name="NuDemandaProtocolo" value="2025.000003200788-84" class="camporeadonly" size="25" readonly></TD>
+                    </TR>
+                    
+                     
+                    
+                    <TR>
+	                    <TH class="campoformulario" width="15%">Auditor Responsável:</TH>
+                        <TD class="campoformulario" colspan="3"><INPUT type="text" name="NuMatriculaAuditor" value="1867091" class="camporeadonly" size="10" readonly>
+                        						            	<INPUT type="text" name="NmRazaoSocialPessoaAuditor" value="RICARDO MILANO GALDINO DE OLIVEIRA" class="camporeadonly" size="60" readonly>
+                        </TD>
+                    </TR>
+                    <TR>
+	                    <TH class="campoformulario" width="15%">Tipo da Ação Fiscal:</TH>
+                        <TD class="campoformulario" colspan="3"><INPUT
+									type="text"
+									value="FISCALIZAÇÃO INDÚSTRIA PRODEPE"
+									class="camporeadonly" size="76" readonly></TD>
+                    </TR>
+                    <TR>                
+                        <TH class="campoformulario" width="20%">Abordagem:</TH>
+                        <TD class="campoformulario" colspan="3">
+                        	<INPUT type="text" id="tpAbordagem" value="P" class="camporeadonly" size="10" readonly> 
+                        	<INPUT type="text" id="dsTpAbordagem" value="PREVENTIVA" class="camporeadonly" size="60" readonly>
+                        </TD>
+                    </TR>
+                    <TR>
+	                    <TH class="campoformulario" width="15%">Data Limite para Retorno:</TH>
+                        <TD class="campoformulario" colspan="3"><INPUT type="text" value="02/09/2025" class="camporeadonly" size="20" readonly style="color: red;">
+                        </TD>
+                    </TR>
+                    <TR>
+	                    <TH class="campoformulario" width="15%">Equipe:</TH>
+                        <TD class="campoformulario" colspan="3"><INPUT type="text" value="GEAF III - PETROLINA GRUPO EXECUTIVO DE AÇÃO FISCAL - III RF" class="camporeadonly" size="70" readonly></TD>
+                    </TR>                    
+                                         
+                    <TR>
+	                    <TH class="campoformulario" width="15%">Situação Atual:</TH>
+                        <TD class="campoformulario" colspan="3"><INPUT type="text" id="inputSituacao" value="ENCERRADA" class="camporeadonly" size="40" readonly></TD>
+                    </TR>    
+                    <TR>
+	                    <TH class="campoformulario" width="15%">Período de Execução da Ação Fiscal:</TH>
+                        <TD class="campoformulario" colspan="3">
+                        	<INPUT type="text" value="05/05/2025" class="camporeadonly" size="20" readonly> à 
+                        	<INPUT type="text" value="29/08/2025" class="camporeadonly" size="20" readonly>
+                        </TD>
+                    </TR>
+                    <TR>
+	                    <TH class="campoformulario" width="15%">Data de Retorno da Ação Fiscal:</TH>
+                        <TD class="campoformulario" ><INPUT type="text" value="29/08/2025" class="camporeadonly" size="20" readonly></TD>
+                    </TR>
+                    
+                    
+                        <TR><TH class="textoseparadorgrupocampos">Prorrogações no Prazo de Retorno</TH><TD colspan="3"><HR></TD></TR>
+ 
+	                <TR>
+	                <TD class="conteinertabeladados" colspan="4">
+                            <DIV id="div_tabeladados" class="tabeladados">
+                            <TABLE id="table_tabeladados" class="tabeladados" cellpadding="0" cellspacing="0">
+                                <TBODY>
+                                    <TR>
+                                        <TH class="headertabeladados" width="15%">Prorrogação</TH>
+                                        <TH class="headertabeladados" width="10%">Data</TH>
+                                        <TH class="headertabeladados" width="10%">Quantidade de Dias</TH>
+                                        <TH class="headertabeladados" width="65%">Usuário Responsável</TH>
+                                    </TR>
+                                    <TR><TD class='tabeladados'>1ª PRORROGAÇÃO</TD><TD class='tabeladados'>25/06/2025</TD><TD class='tabeladados'>60</TD><TD class='tabeladados'>5675 SOCRATES VIEIRA DONATO</TD></TR>
+                                </TBODY>
+                            </TABLE>
+                            </DIV>
+                            </TD>
+                        </TR>
+                                        
+                    <TR>
+                        <TH class="textoseparadorgrupocampos">Informações do Contribuinte</TH>
+                        <TD colspan="3"><HR></TD>
+                    </TR>
+                    <TR>
+	                    <TH class="campoformulario" width="15%">Documento de Identificação:</TH>
+                        <TD class="campoformulario" colspan="3">
+                        
+                        	<INPUT type="text" id="dsTipoDocumento" name="CdTipoDocumentoContribuinte" value="INSCRIÇÃO ESTADUAL" class="camporeadonly" size="25" readonly>
+                        
+                        
+                        	<INPUT type="text" id="nuDocumentoIdentificacao" name="NuDocumentoContribuinte" value="0118444-00" class="camporeadonly" size="25" onkeyup="formatarCampoNumeroDocumento(this, document.frm_principal.tpDocumento, event);" readonly>
+                        	<INPUT type="hidden" id="tpDocumento" value="1">
+                        
+                    </TD>
+                    </TR>
+                    <TR>
+	                    <TH class="campoformulario" width="15%">Nome/Razão Social:</TH>
+                        <TD class="campoformulario" colspan="3"><INPUT type="text" id="nmContribuinte" name="NmRazaoSocialContribuinte" value="VINICOLA DO VALE DO SAO FRANCISCO S/A" class="camporeadonly" size="80" readonly></TD>
+                    </TR>
+                                          
+                                                  
+                                  
+                   
+                    
+					
+		            <TR>
+                        <TH class="textoseparadorgrupocampos">Atividades Programadas</TH>
+                        <TD colspan="3"><HR></TD>
+                    </TR>
+					<TR>
+						<TD class="conteinertabeladados" colspan="4">
+						<TABLE id="table_tabeladados" class="tabeladados"
+						cellpadding="0" cellspacing="0">
+						<TBODY>
+							<TR>
+								<TH class="headertabeladados" width="50%" colspan="2">Atividade da Ação Fiscal</TH>
+								<TH class="headertabeladados" width="25%">Obrigatória</TH>
+								<TH class="headertabeladados" width="25%">Executada</TH>
+							</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">AUDITORIA DO BENEFÍCIO FISCAL DO PRODEPE</TH>
+                    			<TH class="headertabeladados">NÃO</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">AUDITORIA DO BENEFÍCIO FISCAL DO PRODEPE</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">VERIFICAR PROCESSO PRODUTIVO APROVADO PELO CONDIC</TH>
+                    			<TH class="headertabeladados">NÃO</TH>
+                    			<TH class="headertabeladados">NÃO</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">Verificar a veracidade do processo produtivo ou etapas de produção, conforme o projeto econômico aprovado pelo Estado, disposto nos incisos VII, VIII e IX do art.21-A do Decreto 21.959/1999.</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">LAVRAR TERMOS DE INÍCIO E ENCERRAMENTO DA AÇÃO FISCAL - RUDFTO</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">Lavrar termos de início e encerramento da ação fiscal no RUDFTO, de acordo com a Lei 10.654/91 e alterações.</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">IDENTIFICAR OS PRINCIPAIS CLIENTES E FORNECEDORES</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">IDENTIFICAR OS PRINCIPAIS CLIENTES E FORNECEDORES DO CONTRIBUINTE</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">INTIMAR CONTRIBUINTE A APRESENTAR DOCUMENTAÇÕES E ARQUIVOS MAGNÉTICOS</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">Intimar contribuinte a entregar toda documentação, livros e arquivos magnéticos necessários à ação fiscal.</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">INTIMAR CONTRIBUINTE A APRESENTAR SEF'S OMISSOS</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">INTIMAR CONTRIBUINTE A APRESENTAR SEF's OMISSOS</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">VERIFICAR O CORRETO LANÇAMENTO DAS NF´S DE ENTRADAS NO REGISTRO DE ENT</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">&nbsp;</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">VERIFICAR O CORRETO LANÇAMENTO DAS NOTAS FISCAIS DE SAÍDAS NO SEF</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">VERIFICAR O CORRETO LANÇAMENTO DAS NOTAS FISCAIS DE SAÍDAS NO SEF</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">VERIFICAR O RECOLHIMENTO REGULAR DO ICMS APURADO</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">&nbsp;</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">VERIFICAR RECOLHIMENTO DO ICMS P/ ATIVO FIXO E USO E CONSUMO</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">Verificar recolhimento do ICMS de diferencial de alíquota, para ativo fixo e material de uso e consumo.</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">INTIMAR O CONTRIB A APRESENTAR AS PLANILHAS DE CÁLCULO DA SUBAPURAÇÃO</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">NÃO</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">INTIMAR O CONTRIBUINTE A APRESENTAR AS PLANILHAS DE CÁLCULO DA SUBAPURAÇÃO DOS PRODUTOS INCENTIVADOS / NÃO INCENTIVADOS E A COMPOSIÇÃO DOS OUTROS CREDITOS.</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">VERIFICAR A ADEQUAÇÃO TRIBUTÁRIA ENTRE AS ENTRADAS E SAÍDAS DE PRODUTO</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">VERIFICAR A ADEQUAÇÃO TRIBUTÁRIA ENTRE AS ENTRADAS E SAÍDAS DE PRODUTOS JÁ ACABADOS ADQUIRIDOS DE TERCEIROS.</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">VERIFICAR O LANÇAMENTO DE ENTRADAS DE INSUMOS - INCENTIVO</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">VERIFICAR O LANÇAMENTO DOS REGISTROS DE ENTRADAS DE INSUMOS, MATÉRIA-PRIMA, PRODUTOS INTERMEDIÁRIO, EMBALAGENS E DEMAIS INSUMOS USADOS NA FABRICAÇÃO DOS PRODUTOS INCENTIVADOS e NÃO INCENTIVADOS.</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">AJUSTE DA APURAÇÃO (OUTROS CRÉDITOS; OUTROS DÉBITOS, ETC.),</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">AJUSTE DA APURAÇÃO (OUTROS CRÉDITOS; OUTROS DÉBITOS, ETC.), CONFORME PORTARIA SF 239/2001.</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">VERIFICAR O RATEIO DAS AQUISIÇÕES COMUNS AOS PROD INCENTIVADOS E NÃO</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">VERIFICAR A ADEQUAÇÃO DO RATEIO DAS AQUISIÇÕES COMUNS AOS PRODUTOS INCENTIVADOS E NÃO INCENTIVADOS, CONFORME PORTARIA SF 239/2001.</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">VERIFICAR OS CÁLCULOS REALIZADOS PARA APROP DOS CRÉD CIAP E ENERGIA</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">VERIFICAR A ADEQUAÇÃO DOS CÁLCULOS REALIZADOS PARA APROPRIAÇÃO DOS CRÉDITOS RELATIVOS AO CIAP E ENERGIA ELÉTRICA.</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">VERIFICAR REGISTRO DOS ESTORNOS E TRANSF DE CRED PROD INCENTIV E NÃO</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">VERIFICAR O CORRETO REGISTRO DOS ESTORNOS E TRANSFERÊNCIA DE CREDITOS DOS PRODUTOS INCENTIVADOS E NÃO INCENTIVADOS CONFORME PORTARIA SF 239/2001.</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">LAVRAR P.A.T COMPETENTE PARA AS IRREGULARIDADES ENCONTRADAS</TH>
+                    			<TH class="headertabeladados">NÃO</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">Lavrar P.A.T competente para as irregularidades encontradas</TD>
+                    		</TR>
+                    
+                    		<TR>
+                    			<TH class="headertabeladados" colspan="2">APURAR ICMS DEVIDO POR PERÍODO FISCAL</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    			<TH class="headertabeladados">SIM</TH>
+                    		</TR>
+                    		<TR>
+                    			<TD class="tabeladados" width="8%">Descrição: </TD>
+                    			<TD class="tabeladados" colspan="3">Apurar ICMS devido por período fiscal</TD>
+                    		</TR>
+                    
+						</TBODY>
+						</TABLE>
+						</TD>
+					</TR>
+                    
+                    <TR>
+                        	<TH class="campoformulario" width="15%">Justificativa para não cumprimento de obrigatoriedade(s) na execução da ação fiscal:</TH>
+                        	<TD class="campoformulario"><TEXTAREA id="txJustificativaResposta" class="camporeadonly" cols="80" rows="5" readonly>Não se aplica.</TEXTAREA></TD>
+                    </TR>
+                    
+					
+                    
+                    
+		            <TR>
+                        <TH class="textoseparadorgrupocampos">Questionário: CONDIC</TH>
+                        <TD colspan="3"><HR></TD>
+                    </TR>
+                    
+						<TR><TH class="campoformulario" colspan="4">O contribuinte faz uso de produção terceirizada, sem aprovação do CONDIC?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+								<INPUT type="text" value="NÃO" class="camporeadonly" size="60" readonly>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">O Processo produtivo do Contribuinte está de acordo com aprovação do CONDIC?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+								<INPUT type="text" value="SIM" class="camporeadonly" size="60" readonly>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">Houve alguma outra irregularidade no uso do benefício fiscal? Descreve-a.</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly></TEXTAREA>
+	                        
+						</TR>
+					
+		            <TR>
+                        <TH class="textoseparadorgrupocampos">Questionário: FISCALIZAÇÃO INDÚSTRIA PRODEPE</TH>
+                        <TD colspan="3"><HR></TD>
+                    </TR>
+                    
+						<TR><TH class="campoformulario" colspan="4">O contribuinte adota escrituração distinta para os produtos incentivados e não incentivados?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly>Não se verificou produção/ comercialização de mercadoria não incentivada no período fiscalizado.</TEXTAREA>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">O contribuinte efetuou o recolhimento integral do ICMS devido? No prazo legal?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly>Sim</TEXTAREA>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">O contribuinte faz uso de produção terceirizada?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+								<INPUT type="text" value="NÃO" class="camporeadonly" size="60" readonly>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">O contribuinte faz uso de produção terceirizada, sem aprovação do CONDIC?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly>Não.</TEXTAREA>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">O contribuinte recolhe regularmente a taxa devida à AD-DIPER?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+								<INPUT type="text" value="SIM" class="camporeadonly" size="60" readonly>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">O Contribuinte utilizou indevidamente o benefício fiscal do PRODEPE?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly>Contribuinte não beneficiário do PRODEPE.</TEXTAREA>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">Caso tenha utilizado indevidamente o benefício, qual foi o montante utilizado irregularmente?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly></TEXTAREA>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">Qual o motivo da não utilização? Impedimento ou saldo credor?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly></TEXTAREA>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">Teve alguma causa de impedimento de uso do PRODEPE?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly></TEXTAREA>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">Houve alguma outra irregularidade no uso do benefício fiscal? Descreve-a.</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly></TEXTAREA>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">No caso do contribuinte não se utilizar do benefício, qual foi o tempo?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly></TEXTAREA>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">Foram encontradas irregularidades? Quais?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly>Sim. Omissão de saídas, mediante levantamento analítico do estoque, vide Termo de Encerramento.</TEXTAREA>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">Foi lavrado o PAT competente para as irregularidades encontradas?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+								<INPUT type="text" value="SIM" class="camporeadonly" size="60" readonly>
+	                        
+						</TR>
+					
+						<TR><TH class="campoformulario" colspan="4">Qual o retorno conseguido com a ação fiscal?</TH></TR>
+						<TR>
+	                        <TD class="campoformulario" colspan="4">
+	                
+			                    <TEXTAREA COLS="100" ROWS="4" style="overflow: auto;" class="camporeadonly" readonly>CT = R$ 3.866.422,75</TEXTAREA>
+	                        
+						</TR>
+					
+                  
+						
+					
+                    	
+                    
+                    <TR>
+                            <TH class="textoseparadorgrupocampos">Observações do Auditor</TH>
+                            <TD colspan="3"><HR></TD>
+                        </TR>
+                        <TR>
+                            <TH class="campoformulario" width="15%">Observações do Auditor:</TH>
+                            <TD class="campoformulario" colspan="4"><TEXTAREA cols="70" rows="4" id="txAcaoProAtiva" class="camporeadonly" readonly></TEXTAREA></TD>
+                        </TR>
+                    
+                    
+                    <TR>
+                        <TH class="textoseparadorgrupocampos">Termo de Encerramento</TH>
+                        <TD colspan="3"><HR></TD>
+                    </TR>
+			        <TR>
+           				<TD class="campoformulario" colspan="4"> 
+		            		<TABLE cellpadding="5" cellspacing="0" border="2" bgcolor="#dfdfdf">
+							<TR>
+ 	    		    			<TD>           				                     
+				            		<INPUT type="hidden" id="teste" name="TxTermoEncerramento" value="<p class=&quot;MsoNormal&quot; style=&quot;margin-bottom:0cm;text-align:justify;line-height:
+normal&quot;><span lang=&quot;PT-BR&quot;>Em cumprimento à Ordem de
+Serviço nº&nbsp;<b>2025.000003200788-84</b>,&nbsp;em 09/05/2025 iniciamos os
+trabalhos de Fiscalização da empresa <b>VINICOLA DO VALE DO SAO FRANCISCO S/A</b>,
+CNPJ nº&nbsp;10.641.793/0001-81, Inscrição Estadual nº 0118444-00, mediante emissão
+da Intimação Fiscal inicial nº&nbsp;<b>2025.000004169663-14,</b>&nbsp;postada
+no Domicílio Eletrônico da Empresa (DTE) em 14/05/2025 para&nbsp;requisição de
+documentos, informações e arquivos digitais necessários à execução dos
+trabalhos. <o:p></o:p></span></p>
+
+<p class=&quot;MsoNormal&quot; style=&quot;margin-bottom:0cm;text-align:justify;line-height:
+normal&quot;><span lang=&quot;PT-BR&quot;>&nbsp;</span></p>
+
+<p class=&quot;MsoNormal&quot; style=&quot;margin-bottom:0cm;text-align:justify;line-height:
+normal&quot;><span lang=&quot;PT-BR&quot;>A ciência eletrônica da
+Intimação ocorreu&nbsp;no dia 15/05/2025, por acesso de MARIA DE FATIMA XAVIER
+DE ANDRADE, CPF nº 247.256.174-15 aos nossos Sistemas.&nbsp;No curso da
+fiscalização foram emitidas Intimações complementares nº 2025.000007650042-32 e
+2025.000009609447-10 para oportuna instrução dos trabalhos. A demanda teve por
+objetivo a fiscalização de empresa do segmento econômico de&nbsp;<b>BEBIDAS</b>,
+para homologação dos exercícios fiscais de<b>&nbsp;2020</b>&nbsp;e&nbsp;<b>2021</b>,
+com ênfase no acompanhamento do incentivo do <b>DECRETO Nº 33.709, DE 27 DE
+JULHO DE&nbsp;2009</b>, seus desdobramentos e regulamentações. Realizadas as considerações iniciais passamos a relatar o
+que foi apurado mediante análise da escrita fiscal da empresa, documentação e
+arquivos digitais acessados em nossos repositórios, conforme o que segue:&nbsp;<a name=&quot;_Hlk53999193&quot;></a><a name=&quot;_Hlk53999251&quot;></a>a) Constatamos que a empresa
+é incentivada pelo <b>Programa de Desenvolvimento do Setor Vitivinícola do
+Estado de Pernambuco, instituído pela Lei nº 13.830, de 29 de junho de 2009</b>;
+b) Em razão do benefício citado a empresa é habilitada ao usufruto dos
+incentivos de que trata o artigo 1º do Decreto nº 33.709/ 2009; c) Não verificamos
+registro de créditos relativos às aquisições para o Ativo Imobilizado (Ativo
+Fixo) ou Energia Elétrica utilizada no processo&nbsp;<b>INDUSTRIAL </b>no
+período fiscalizado; d) Verificamos que a empresa recolheu regularmente a Taxa
+de Administração prevista no Artigo 3º do Decreto 33.709/2009; e) Verificamos
+os ajustes da apuração e não observamos irregularidades nos lançamentos; f)
+Confrontamos os lançamentos das notas fiscais eletrônicas (NFe) emitidas <b>para</b>
+a empresa com os lançamentos do SPED-EFD-ICMS/IPI (Livro Registro de Entradas -
+LRE), checando os valores lançados a crédito do imposto&nbsp;e alíquotas, sem
+termos verificado qualquer omissão ou irregularidade passível de nota; g)
+Confrontamos os lançamentos das notas fiscais eletrônicas (NFe) emitidas <b>pela</b>
+empresa com os lançamentos do SPED-EFD-ICMS/IPI (Livro Registro de Saídas -
+LRS), checando os valores do débito do imposto e alíquotas, sem observarmos
+omissões ou irregularidades passíveis de nota; h) A empresa não emitiu, no
+período fiscalizado, NFCe - Notas fiscais de consumidor eletrônicas; i) A
+empresa apurou e escriturou satisfatoriamente as Deduções do ICMS devedor em
+cada período fiscal referente ao estímulo (Crédito Presumido) previsto no Artigo
+1º, I do Decreto nº &nbsp;33.709/2009; j) No curso
+da fiscalização, constatamos que o contribuinte deixou de recolher o ICMS
+Normal, código 005-1, no valor original de R$ 1.457.465,42 no Exercício de
+2021, em razão da constatação de que a denunciada efetuou venda de mercadorias
+tributadas sem a emissão da nota fiscal exigida e sem os registros nos Livros
+Fiscais, em especial, no Livro Registro de Saídas LRS&nbsp; e Livro de Apuração do ICMS - RAICMS. Fato
+constatado mediante Levantamento da Analítico da Movimentação dos Estoques
+(LAE) de mercadorias no período de janeiro a dezembro do exercício de 2021.
+Pela infração apurada foi lavrado o TAR </span><span lang=&quot;PT-BR&quot;>- </span><span lang=&quot;PT-BR&quot;>Termo
+de Acompanhamento e Regularização n° <b>2025.000009593236-86</b>, para
+constituição do Crédito Tributário no montante de R$ 3.866.422,75. Observado o
+proposto, finalizamos a Ação Fiscal sem ter verificado outras hipóteses de
+infração tributária, restando homologados os exercícios fiscais de 2020 e 2021.
+Petrolina, 28 de agosto de 2025.&nbsp;<b>Ricardo Milano Galdino de Oliveira -
+AFTE II - Matrícula 186.709-1 - GEAF 1 III RF - Petrolina.</b><o:p></o:p></span></p>">
+								    <SCRIPT language="JavaScript" type="text/javascript">
+				 						initRTE('sfi');
+										writeRichText('rte', document.frm_principal.teste.value, 620, 150, false, true);	
+				 					</SCRIPT>
+								</TD>
+							</TR>
+							</TABLE>
+							<BR>
+						</TD>
+					</TR>
+                    
+                    <TR>	                    
+	                    <TH class="textoseparadorgrupocampos">Valor de Estorno: <br> (Retorno Financeiro Indireto)</TH>
+	                    <TD colspan="3"><HR></TD>	                    
+                    </TR>                    
+                    <TR>
+                    	<TD class="campoformulario" colspan="4"><INPUT type="text" id="valorEstornado" name="valorEstornado" value="" class="camporeadonly" readonly size="20" maxlength="15"></TD>
+                    </TR>
+                    
+                    <TR>
+                    	<TH class="campoformulario" width="15%">Parecer de Fechamento da Revisão:</TH>
+                    	<TD class="campoformulario" colspan="4">
+                    		<TEXTAREA  class="camporeadonly" cols="100" rows="7" readonly>08/09/2025 12:54:03
+SOCRATES VIEIRA DONATO
+Excelente retorno!</TEXTAREA>
+                        </TD>
+					</TR>
+                            
+		            
+		            <TR>
+                        <TH class="textoseparadorgrupocampos">Divergências Cadastrais Identificadas</TH>
+                        <TD colspan="3"><HR></TD>
+                    </TR>
+                    
+						<TR><TD class="campoformulario" colspan="4">Nenhuma Divergência Cadastral Identificada</TD></TR>
+                    
+		            <TR>
+                        <TH class="textoseparadorgrupocampos">Hipóteses de Inaptidão</TH>
+                        <TD colspan="3"><HR></TD>
+                    </TR>
+                    
+						<TR><TD class="campoformulario" colspan="4">Nenhuma Hipótese de Inaptidão Identificada</TD></TR>
+                    
+                    
+                    <TR>
+                        <TH class="textoseparadorgrupocampos">Hipóteses de Suspensão</TH>
+                        <TD colspan="3"><HR></TD>
+                    </TR>
+                    
+                        <TR><TD class="campoformulario" colspan="4">Nenhuma Hipótese de Suspensão Identificada</TD></TR>
+                    
+			        <TR>
+			       		<TH class="textoseparadorgrupocampos">Intimações Fiscais</TH>
+			       		<TD colspan="3"><HR></TD>
+			        </TR>
+					
+					<TR>
+			            <TD class="conteinertabeladados"  colspan="4">
+			            <DIV id="div_tabeladados" class="tabeladados">
+			            <TABLE id="table_tabeladados" class="tabeladados" cellpadding="0" cellspacing="0">
+			                <TBODY>
+			                    <TR>
+                                    <TH class="headertabeladados" width="17%">Número da Intimação</TH>
+                                    <TH class="headertabeladados" width="20%">Tipo da Intimação</TH>
+                                    <TH class="headertabeladados" width="23%">Situação</TH>
+                                    <TH class="headertabeladados" width="20%">Data da Emissão</TH>
+                                    <TH class="headertabeladados" width="20%">Data da Intimação</TH>
+			                    </TR>
+			                
+			                        	
+			                    <TR>
+                                    <TD class="tabeladados">&nbsp;&nbsp;<A id="lnkFramework" name="lnkFramework" href="javascript:exibirDetalhamentoProcesso('PRAdministrarDemandaAcaoFiscal','exibirDetalhamentoProcessoIntimacao','202500000416966314[[*]]202500000320078884[[*]]I[[*]]E[[*]]2025-05-09[[*]]2025-05-15[[*]]-[[*]]1')"  class="linkNormal" >2025.000004169663-14</A></TD>
+                                    <TD class="tabeladados">INICIAL</TD>
+			                        <TD class="tabeladados">ENCERRADA</TD>
+			                        <TD class="tabeladados">09/05/2025</TD>
+			                        <TD class="tabeladados">15/05/2025</TD>
+			                    </TR>
+			                
+			                        	
+			                    <TR>
+                                    <TD class="tabeladados">&nbsp;&nbsp;<A id="lnkFramework" name="lnkFramework" href="javascript:exibirDetalhamentoProcesso('PRAdministrarDemandaAcaoFiscal','exibirDetalhamentoProcessoIntimacao','202500000765004232[[*]]202500000320078884[[*]]C[[*]]E[[*]]2025-07-01[[*]]2025-07-10[[*]]-[[*]]1')"  class="linkNormal" >2025.000007650042-32</A></TD>
+                                    <TD class="tabeladados">COMPLEMENTAR</TD>
+			                        <TD class="tabeladados">ENCERRADA</TD>
+			                        <TD class="tabeladados">01/07/2025</TD>
+			                        <TD class="tabeladados">10/07/2025</TD>
+			                    </TR>
+			                
+			                        	
+			                    <TR>
+                                    <TD class="tabeladados">&nbsp;&nbsp;<A id="lnkFramework" name="lnkFramework" href="javascript:exibirDetalhamentoProcesso('PRAdministrarDemandaAcaoFiscal','exibirDetalhamentoProcessoIntimacao','202500000960944710[[*]]202500000320078884[[*]]C[[*]]N[[*]]2025-08-28[[*]]2025-09-03[[*]]-[[*]]1')"  class="linkNormal" >2025.000009609447-10</A></TD>
+                                    <TD class="tabeladados">COMPLEMENTAR</TD>
+			                        <TD class="tabeladados">COM CIÊNCIA</TD>
+			                        <TD class="tabeladados">28/08/2025</TD>
+			                        <TD class="tabeladados">03/09/2025</TD>
+			                    </TR>
+			                
+			                </TBODY>
+			            </TABLE>
+			            </DIV>
+			            </TD>
+			        </TR>
+	                
+			        <TR>
+			       		<TH class="textoseparadorgrupocampos">Processos lavrados</TH>
+			       		<TD colspan="3"><HR></TD>
+			        </TR>
+					
+					<TR>
+			            <TD class="conteinertabeladados" colspan="4">
+			            <DIV id="div_tabeladados" class="tabeladados">
+			            <TABLE id="table_tabeladados" class="tabeladados" cellpadding="0" cellspacing="0">
+			                <TBODY>
+			                    <TR>
+			                        <TH class="headertabeladados" width="17%" >Número do Processo</TH>
+			                        <TH class="headertabeladados" width="15%" >Espécie do Processo</TH>
+			                        <TH class="headertabeladados" width="20%" >Identificação do Autuado</TH>
+			                        <TH class="headertabeladados" width="20%" >Nome/Razão Social do Autuado</TH>
+			                        <TH class="headertabeladados" width="10%" >Data da Geração</TH>
+			                        <TH class="headertabeladados" width="15%" >Situação</TH> 
+			                    </TR>
+			                
+										<TR>
+                                            
+                                            <TD class="tabeladados">&nbsp;&nbsp;<A id="lnkFramework" name="lnkFramework" href="javascript:exibirDetalhamentoProcesso('PRAdministrarDemandaAcaoFiscal','exibirDetalhamentoProcesso','202500000320078884[[*]]202500000959323686[[*]]1467[[*]]VINICOLA DO VALE DO SAO FRANCISCO S A[[*]]011844400[[*]]39[[*]]1[[*]]100')"  class="linkNormal" >2025.000009593236-86</A></TD>
+											<TD class="tabeladados">TERMO DE ACOMPANHAMENTO E REGULARIZAÇÃO</TD>
+											<TD class="tabeladados">0118444-00</TD>
+											<TD class="tabeladados">VINICOLA DO VALE DO SAO FRANCISCO S/A</TD>
+											<TD class="tabeladados">27/08/2025</TD>
+											<TD class="tabeladados">ATIVO</TD>
+										</TR>
+			                        
+			                        	
+			                </TBODY>
+			            </TABLE>
+			            </DIV>
+			            </TD>
+			        </TR>
+                    
+                   <TR>
+		           		<TH class="textoseparadorgrupocampos">Termo de Exclusão</TH>
+		            	<TD colspan="3"><HR></TD>
+		           </TR>
+			        
+			      
+                    <TR>
+	                     	<TD class="campoformulario" colspan="4">Nenhum Termo Gerado</TD>
+	                     </TR>      
+			       
+			         
+                    <TR>
+                   		<TH class="textoseparadorgrupocampos">Anexos da Ação Fiscal</TH>
+                        <TD colspan="3"><HR></TD>
+                    </TR>  
+                    
+								
+									<TR><TD class="campoformulario" colspan="4">Nenhum Anexo nesta Ação Fiscal</TD></TR>
+	                            
+	                                     
+		<TR>
+      	 <TH class="textoseparadorgrupocampos">Processos Associados</TH>
+			<TD colspan="3"><HR></TD>
+		</TR>
+		<TR>
+            <TD class="conteinertabeladados" colspan="4">
+            <TABLE id="table_tabeladados" class="tabeladados" cellpadding="0" cellspacing="0">
+                <TBODY>
+                
+                    <TR>
+								<TH class="headertabeladados" width="17%" >Número do Processo</TH>
+                        		<TH class="headertabeladados" width="15%" >Espécie do Processo</TH>
+								<TH class="headertabeladados" width="20%" >Identificação do Autuado</TH>
+								<TH class="headertabeladados" width="10%" >Data da Geração</TH>
+								<TH class="headertabeladados" width="15%" >Situação</TH>
+							</TR>
+							
+                                    <TR>
+									 	<TD class="tabeladados" colspan="10">Nenhum registro encontrado.</TD>
+                                    </TR>
+								    
+	     			</TBODY>
+	     		</TABLE>
+	     	</TD>
+	     </TR>
+	     
+
+
+
+        <TR>
+      	 <TH class="textoseparadorgrupocampos">DAEs Associados</TH>
+			<TD colspan="3"><HR></TD>
+		</TR>
+		<TR>
+            <TD class="conteinertabeladados" colspan="4">
+            <TABLE id="table_tabeladados" class="tabeladados" cellpadding="0" cellspacing="0">
+                <TBODY>
+                
+                    <TR>
+							<TH class="headertabeladados" width="10%">Natureza Receita</TH>
+							<TH class="headertabeladados" width="14%">Documento Identificação</TH>
+							<TH class="headertabeladados" width="9%" >Período Fiscal</TH>
+							<TH class="headertabeladados" width="12%">Documento Origem</TH>
+							<TH class="headertabeladados" width="7%" >Município</TH>
+							<TH class="headertabeladados" width="12%">Data da Arrecadação</TH>
+							<TH class="headertabeladados" width="6%" >Valor</TH>	
+							<TH class="headertabeladados" width="15%">Autenticação Bancária</TH>
+							<TH class="headertabeladados" width="15%" >Situação</TH>
+						</TR>
+
+					
+                                <TR>
+								<TD class="tabeladados" colspan="10">Nenhum registro encontrado.</TD>
+                                </TR>
+							
+											
+	     			</TBODY>
+	     		</TABLE>
+	     	</TD>
+	     </TR>
+	       
+	     
+     
+			        
+                </TBODY>
+            </TABLE>
+            </DIV>
+            </TD>
+        </TR>
+        <TR>
+            <TD class="conteinerbarraacoes">
+            <TABLE id="table_barraacoes" class="barraacoes" cellpadding="0" cellspacing="0">
+                <TBODY>
+                    <TR>
+                        <TD class="botaofuncao"><INPUT type="button" class="botaofuncaog" id="btt_imprimir_encerramento" name="btt_imprimir_encerramento" value="Visualizar Termo de Encerramento (v)" onclick="setBotaoAtivado(this); gerarTermoEncerramento('/sfi_trb_gaf/PRRetornoAcaoFiscalConsulta', 'imprimirTermoEncerramento')" accesskey="v"></TD>
+                                                
+                        <!-- Se a minha servlet anterior for PRManterRevisaoDemandaAcaoFiscal mostre os botões -->
+                        
+                                                    
+                        <TD class="botaofuncao"><!--<INPUT type="button" class="botaofuncaog" id="btt_justificativas" name="btt_justificativas" value="Obrigatoriedades não atendidas (o)" onclick="setBotaoAtivado(this); exibirJustificativas('/sfi_trb_gaf/PRAdministrarDemandaAcaoFiscal', 'exibirJustificativas')" accesskey="o">--></TD>
+                    
+                    
+                        <TD class="botaofuncao"><INPUT type="button" class="botaofuncaog" id="btt_desistir" name="btt_desistir" value="Desistir (t)" onclick="setBotaoAtivado(this); desistir('/sfi_trb_gaf/PRConsultarDemandaAcaoFiscal', 'exibirFiltroConsulta')" accesskey="t"></TD>
+                        <TD> </TD>
+                    </TR>
+                </TBODY>
+            </TABLE>
+            </TD>
+        </TR>
+        </TABLE>
+        </TD>  
+        </TR>
+        
+</TBODY>
+</TABLE>
+</TD>
+<TD class="espacadorC2"></TD>
+</TR>
+<script>configurarPagina();</script>
+    </TBODY>
+</TABLE>
+</FORM>
+
+
+</BODY>
+</HTML>
